@@ -10,9 +10,10 @@ DEFAULT_CONFIG = {
     ),
     # LLM settings
     "llm_provider": "openai",
-    "deep_think_llm": "o4-mini",
-    "quick_think_llm": "gpt-4o-mini",
-    "backend_url": "https://api.openai.com/v1",
+    "deep_think_llm": "llama3:8b",
+    "quick_think_llm": "llama3:8b",
+    "backend_url": "http://ollama:11434/v1",
+    "api_key": "ollama", # Ollama doesn't check this but langchain might need it
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,
@@ -23,7 +24,7 @@ DEFAULT_CONFIG = {
         "core_stock_apis": "yfinance",       # Options: yfinance, alpha_vantage, local
         "technical_indicators": "yfinance",  # Options: yfinance, alpha_vantage, local
         "fundamental_data": "alpha_vantage", # Options: openai, alpha_vantage, local
-        "news_data": "alpha_vantage",        # Options: openai, alpha_vantage, google, local
+        "news_data": "trendradar",           # UPDATED: Use TrendRadar
     },
     # Tool-level configuration (takes precedence over category-level)
     "tool_vendors": {

@@ -9,6 +9,7 @@ stockstats
 eodhd
 langgraph
 chromadb
+
 setuptools
 backtrader
 akshare

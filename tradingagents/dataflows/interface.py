@@ -5,6 +5,7 @@ from .local import get_YFin_data, get_finnhub_news, get_finnhub_company_insider_
 from .y_finance import get_YFin_data_online, get_stock_stats_indicators_window, get_balance_sheet as get_yfinance_balance_sheet, get_cashflow as get_yfinance_cashflow, get_income_statement as get_yfinance_income_statement, get_insider_transactions as get_yfinance_insider_transactions
 from .google import get_google_news
 from .openai import get_stock_news_openai, get_global_news_openai, get_fundamentals_openai
+from .trendradar import get_news as get_trendradar_news, get_global_news as get_trendradar_global_news
 from .alpha_vantage import (
     get_stock as get_alpha_vantage_stock,
     get_indicator as get_alpha_vantage_indicator,
@@ -58,7 +59,8 @@ VENDOR_LIST = [
     "local",
     "yfinance",
     "openai",
-    "google"
+    "google",
+    "trendradar"
 ]
 
 # Mapping of methods to their vendor-specific implementations
@@ -101,10 +103,12 @@ VENDOR_METHODS = {
         "openai": get_stock_news_openai,
         "google": get_google_news,
         "local": [get_finnhub_news, get_reddit_company_news, get_google_news],
+        "trendradar": get_trendradar_news,
     },
     "get_global_news": {
         "openai": get_global_news_openai,
-        "local": get_reddit_global_news
+        "local": get_reddit_global_news,
+        "trendradar": get_trendradar_global_news
     },
     "get_insider_sentiment": {
         "local": get_finnhub_company_insider_sentiment
@@ -151,7 +155,7 @@ def route_to_vendor(method: str, *args, **kwargs):
 
     # Get all available vendors for this method for fallback
     all_available_vendors = list(VENDOR_METHODS[method].keys())
-    
+
     # Create fallback vendor list: primary vendors first, then remaining vendors as fallbacks
     fallback_vendors = primary_vendors.copy()
     for vendor in all_available_vendors:
@@ -202,7 +206,7 @@ def route_to_vendor(method: str, *args, **kwargs):
                 result = impl_func(*args, **kwargs)
                 vendor_results.append(result)
                 print(f"SUCCESS: {impl_func.__name__} from vendor '{vendor_name}' completed successfully")
-                    
+
             except AlphaVantageRateLimitError as e:
                 if vendor == "alpha_vantage":
                     print(f"RATE_LIMIT: Alpha Vantage rate limit exceeded, falling back to next available vendor")
@@ -220,7 +224,7 @@ def route_to_vendor(method: str, *args, **kwargs):
             successful_vendor = vendor
             result_summary = f"Got {len(vendor_results)} result(s)"
             print(f"SUCCESS: Vendor '{vendor}' succeeded - {result_summary}")
-            
+
             # Stopping logic: Stop after first successful vendor for single-vendor configs
             # Multiple vendor configs (comma-separated) may want to collect from multiple sources
             if len(primary_vendors) == 1:
